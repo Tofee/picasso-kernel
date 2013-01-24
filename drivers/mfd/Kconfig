@@ -895,6 +895,21 @@ config MFD_PALMAS
 	  If you say yes here you get support for the Palmas
 	  series of PMIC chips from Texas Instruments.
 
+config MFD_ACER_PICASSO_EC
+	bool "Acer Iconia A500 EC"
+	depends on MACH_PICASSO && I2C
+	default y
+	help
+		Say Y here to enable the embedded controller in Acer Iconia Tab
+
+config MFD_ACER_PICASSO_EC_SYS
+	bool "Acer Iconia A500 System functions"
+	depends on MFD_ACER_PICASSO_EC
+	default y
+	help
+		Say Y here to enable the platform device to query board info
+		and control power on Acer Iconia Tab
+
 endif # MFD_SUPPORT
 
 menu "Multimedia Capabilities Port drivers"

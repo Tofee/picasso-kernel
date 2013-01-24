@@ -1,6 +1,6 @@
 GCOV_PROFILE := y
 
-subdir-ccflags-y := -Werror
+#subdir-ccflags-y := -Werror
 
 obj-y                                   += ahb.o
 obj-y                                   += apbio.o
@@ -144,6 +144,14 @@ obj-${CONFIG_MACH_VENTANA}              += board-ventana-power.o
 obj-${CONFIG_MACH_VENTANA}              += board-ventana-panel.o
 obj-${CONFIG_MACH_VENTANA}              += board-ventana-sensors.o
 obj-${CONFIG_MACH_VENTANA}              += board-ventana-memory.o
+
+obj-${CONFIG_MACH_PICASSO}              += board-picasso.o
+obj-${CONFIG_MACH_PICASSO}              += board-picasso-pinmux.o
+obj-${CONFIG_MACH_PICASSO}              += board-picasso-power.o
+obj-${CONFIG_MACH_PICASSO}              += board-picasso-panel.o
+obj-${CONFIG_MACH_PICASSO}              += board-picasso-memory.o
+obj-${CONFIG_MACH_PICASSO}              += board-picasso-sdhci.o
+obj-${CONFIG_MACH_PICASSO}              += board-picasso-sensors.o
 
 obj-${CONFIG_MACH_ARUBA}                += board-aruba.o
 obj-${CONFIG_MACH_ARUBA}                += board-aruba-panel.o

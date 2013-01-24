@@ -38,7 +38,7 @@
 
 static const u8 ether_bcast[ETH_ALEN] = {255, 255, 255, 255, 255, 255};
 
-static u32 brcmf_dbg_level = WL_DBG_ERR;
+static u32 brcmf_dbg_level = WL_DBG_NONE;
 
 static bool brcmf_is_ibssmode(struct brcmf_cfg80211_priv *cfg_priv);
 static s32

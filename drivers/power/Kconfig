@@ -285,6 +285,12 @@ config CHARGER_MAX8998
 	  Say Y to enable support for the battery charger control sysfs and
 	  platform data of MAX8998/LP3974 PMICs.
 
+config BATTERY_ACER_PICASSO
+	tristate "Acer Picasso Battery"
+	depends on MFD_ACER_PICASSO_EC
+	help
+	  Say Y here to enable support for the battery in Acer Iconia A500.
+
 endif # POWER_SUPPLY
 
 config TEGRA_BPC_MGMT

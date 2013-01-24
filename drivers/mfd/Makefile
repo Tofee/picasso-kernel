@@ -115,3 +115,5 @@ obj-$(CONFIG_MFD_RICOH583)	+= ricoh583.o
 obj-$(CONFIG_MFD_RC5T583)	+= rc5t583.o rc5t583-irq.o
 obj-$(CONFIG_MFD_PALMAS)	+= palmas.o
 obj-$(CONFIG_MFD_LM3533)	+= lm3533-core.o lm3533-ctrlbank.o
+obj-$(CONFIG_MFD_ACER_PICASSO_EC) += acer_picasso_ec.o
+obj-$(CONFIG_MFD_ACER_PICASSO_EC_SYS) += acer_picasso_ec_sys.o
