@@ -399,7 +399,7 @@ static int rndis_function_bind_config(struct android_usb_function *f,
 		rndis_control_intf.bInterfaceProtocol =	 0x03;
 	}
 
-	return rndis_bind_config(c, rndis->ethaddr, rndis->vendorID,
+	return rndis_bind_config_vendor(c, rndis->ethaddr, rndis->vendorID,
 				    rndis->manufacturer);
 }
 

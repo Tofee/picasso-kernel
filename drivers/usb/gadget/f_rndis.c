@@ -774,8 +774,9 @@ rndis_bind(struct usb_configuration *c, struct usb_function *f)
 	rndis_set_param_medium(rndis->config, NDIS_MEDIUM_802_3, 0);
 	rndis_set_host_mac(rndis->config, rndis->ethaddr);
 
-	if (rndis_set_param_vendor(rndis->config, rndis->vendorID,
-				   rndis->manufacturer))
+	if (rndis->manufacturer && rndis->vendorID &&
+				rndis_set_param_vendor(rndis->config, rndis->vendorID,
+								rndis->manufacturer))
 			goto fail;
 
 	/* NOTE:  all that is done without knowing or caring about
@@ -857,7 +858,7 @@ static inline bool can_support_rndis(struct usb_configuration *c)
  * for calling @gether_cleanup() before module unload.
  */
 int
-rndis_bind_config(struct usb_configuration *c, u8 ethaddr[ETH_ALEN],
+rndis_bind_config_vendor(struct usb_configuration *c, u8 ethaddr[ETH_ALEN],
 				u32 vendorID, const char *manufacturer)
 {
 	struct f_rndis	*rndis;

@@ -473,7 +473,7 @@ CONFIG_ALIGNMENT_TRAP=y
 # CONFIG_USE_OF is not set
 CONFIG_ZBOOT_ROM_TEXT=0x0
 CONFIG_ZBOOT_ROM_BSS=0x0
-CONFIG_CMDLINE="mem=1024M@0M vmalloc=256M lp0_vec=8192@0x1840c000 video=tegrafb console=tty0 usbcore.old_scheme_first=1 gpt root=/dev/mmcblk0p8 rw"
+CONFIG_CMDLINE="mem=1024M@0M vmalloc=256M lp0_vec=8192@0x3d805000 video=tegrafb console=tty0 usbcore.old_scheme_first=1 gpt root=/dev/mmcblk0p8 rw"
 # CONFIG_CMDLINE_FROM_BOOTLOADER is not set
 # CONFIG_CMDLINE_EXTEND is not set
 CONFIG_CMDLINE_FORCE=y
