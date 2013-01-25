@@ -34,6 +34,7 @@
 #include <linux/mfd/acer_picasso_ec.h>
 
 #define EC_POLL_PERIOD 30000	/* 30 Seconds */
+#define UPOWER_CAPACITY_FIX
 
 static struct timer_list poll_timer;
 static struct acer_picasso_ec_priv *priv = NULL;
@@ -209,6 +210,26 @@ static int picasso_battery_get_property(struct power_supply *psy,
 		return picasso_battery_get_cycle_count(val);
 	case POWER_SUPPLY_PROP_CURRENT_NOW:
 		return picasso_battery_get_current_now(val);
+
+#ifdef UPOWER_CAPACITY_FIX
+	/* satisfy upower by also returning capacity as energy for now
+	 * if we do not do this upower (and perhaps others) will falsely
+	 * report the battery having 0% left
+	 *  */
+	case POWER_SUPPLY_PROP_ENERGY_NOW:
+		picasso_battery_get_battery_capacity(val);
+		val->intval *= 1000000;
+		break;
+	case POWER_SUPPLY_PROP_ENERGY_FULL:
+	case POWER_SUPPLY_PROP_ENERGY_FULL_DESIGN:
+		val->intval = 100000000;
+		break;
+	case POWER_SUPPLY_PROP_ENERGY_EMPTY:
+	case POWER_SUPPLY_PROP_ENERGY_EMPTY_DESIGN:
+		val->intval = 0;
+		break;
+#endif
+
 	default:
 		dev_err(&priv->client->dev,
 			"%s: INVALID property\n", __func__);
@@ -227,6 +248,11 @@ static enum power_supply_property picasso_battery_properties[] = {
 	POWER_SUPPLY_PROP_CURRENT_NOW,
 	POWER_SUPPLY_PROP_CYCLE_COUNT,
 	POWER_SUPPLY_PROP_TEMP,
+	POWER_SUPPLY_PROP_ENERGY_NOW,
+	POWER_SUPPLY_PROP_ENERGY_FULL,
+	POWER_SUPPLY_PROP_ENERGY_FULL_DESIGN,
+	POWER_SUPPLY_PROP_ENERGY_EMPTY,
+	POWER_SUPPLY_PROP_ENERGY_EMPTY_DESIGN
 };
 
 static struct power_supply picasso_battery_supply = {
