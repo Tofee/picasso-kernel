@@ -33,13 +33,17 @@
 #include <linux/timer.h>
 #include <linux/mfd/acer_picasso_ec.h>
 
-#define EC_POLL_PERIOD 30000	/* 30 Seconds */
-#define UPOWER_CAPACITY_FIX
+#define EC_POLL_PERIOD 30000				/* 30 Seconds */
+#define BATTERY_WH_FULL 		24100000 	/* battery = 24.10Wh ( 2 * 3260mAh ) */
+#define BATTERY_WH_PERCENTAGE	241000
 
 static struct timer_list poll_timer;
 static struct acer_picasso_ec_priv *priv = NULL;
-
 static struct power_supply picasso_battery_supply;
+
+static int last_current = 0;
+static int last_voltage = 0;
+static int last_wh = 0;
 
 static void tegra_battery_poll_timer_func(unsigned long unused)
 {
@@ -146,6 +150,7 @@ static int picasso_battery_get_voltage(union power_supply_propval *val) {
 		return ret;
 	}
 	val->intval = ret * 1000;
+	last_voltage = val->intval;
 	return 0;
 }
 
@@ -163,11 +168,13 @@ static int picasso_battery_get_current_now(union power_supply_propval *val) {
 	s32 ret;
 	s16 curr;
 	ret = picasso_battery_read_register(EC_BATT_CURRENT_NOW);
+
 	if (ret < 0) {
 		return ret;
 	}
 	curr = ret & 0xffff;
-	val->intval = curr * 1000;
+	val->intval = -(curr * 1000);
+	last_current = val->intval;
 	return 0;
 }
 
@@ -190,6 +197,8 @@ static int picasso_battery_get_property(struct power_supply *psy,
 			       enum power_supply_property psp,
 			       union power_supply_propval *val)
 {
+	int W,t;
+
 	switch (psp) {
 	case POWER_SUPPLY_PROP_PRESENT:
 		return picasso_battery_get_condition(psp, val);
@@ -198,38 +207,43 @@ static int picasso_battery_get_property(struct power_supply *psy,
 	case POWER_SUPPLY_PROP_TECHNOLOGY:
 		val->intval = POWER_SUPPLY_TECHNOLOGY_LION;
 		break;
-	case POWER_SUPPLY_PROP_CAPACITY:
-		return picasso_battery_get_battery_capacity(val);
 	case POWER_SUPPLY_PROP_STATUS:
 		return picasso_battery_get_status(psy, val);
-	case POWER_SUPPLY_PROP_VOLTAGE_NOW:
-		return picasso_battery_get_voltage(val);
 	case POWER_SUPPLY_PROP_TEMP:
 		return picasso_battery_get_temperature(val);
 	case POWER_SUPPLY_PROP_CYCLE_COUNT:
 		return picasso_battery_get_cycle_count(val);
 	case POWER_SUPPLY_PROP_CURRENT_NOW:
 		return picasso_battery_get_current_now(val);
-
-#ifdef UPOWER_CAPACITY_FIX
-	/* satisfy upower by also returning capacity as energy for now
-	 * if we do not do this upower (and perhaps others) will falsely
-	 * report the battery having 0% left
-	 *  */
+	case POWER_SUPPLY_PROP_VOLTAGE_NOW:
+		return picasso_battery_get_voltage(val);
+	case POWER_SUPPLY_PROP_CAPACITY:
+		return picasso_battery_get_battery_capacity(val);
 	case POWER_SUPPLY_PROP_ENERGY_NOW:
+		/* battery power in Wh */
 		picasso_battery_get_battery_capacity(val);
-		val->intval *= 1000000;
+		val->intval *= BATTERY_WH_PERCENTAGE;
+		last_wh = val->intval;
 		break;
 	case POWER_SUPPLY_PROP_ENERGY_FULL:
 	case POWER_SUPPLY_PROP_ENERGY_FULL_DESIGN:
-		val->intval = 100000000;
+		val->intval = BATTERY_WH_FULL;
 		break;
 	case POWER_SUPPLY_PROP_ENERGY_EMPTY:
 	case POWER_SUPPLY_PROP_ENERGY_EMPTY_DESIGN:
 		val->intval = 0;
 		break;
-#endif
-
+	case POWER_SUPPLY_PROP_TIME_TO_EMPTY_NOW:
+		/* return time in seconds */
+		W = (last_voltage / 1000) * (last_current / 1000);
+		t = (W != 0) ? ( last_wh / (W / 3600)) : 3600;
+		val->intval = t;
+		break;
+	case POWER_SUPPLY_PROP_POWER_NOW:
+		/* return power in uW */
+		W = (last_voltage / 1000) * (last_current / 1000);
+		val->intval = W;
+		break;
 	default:
 		dev_err(&priv->client->dev,
 			"%s: INVALID property\n", __func__);
@@ -252,7 +266,9 @@ static enum power_supply_property picasso_battery_properties[] = {
 	POWER_SUPPLY_PROP_ENERGY_FULL,
 	POWER_SUPPLY_PROP_ENERGY_FULL_DESIGN,
 	POWER_SUPPLY_PROP_ENERGY_EMPTY,
-	POWER_SUPPLY_PROP_ENERGY_EMPTY_DESIGN
+	POWER_SUPPLY_PROP_ENERGY_EMPTY_DESIGN,
+	POWER_SUPPLY_PROP_TIME_TO_EMPTY_NOW,
+	POWER_SUPPLY_PROP_POWER_NOW,
 };
 
 static struct power_supply picasso_battery_supply = {
