@@ -632,6 +632,9 @@ KBUILD_CFLAGS	+= $(call cc-option,-fno-strict-overflow)
 # conserve stack if available
 KBUILD_CFLAGS   += $(call cc-option,-fconserve-stack)
 
+# keep aligned access for ARMv7 architecture
+KBUILD_CFLAGS += $(call cc-option,-mno-unaligned-access)
+
 # use the deterministic mode of AR if available
 KBUILD_ARFLAGS := $(call ar-option,D)
 
