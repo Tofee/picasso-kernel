@@ -30,6 +30,12 @@ config TEGRA_DC
 	help
 	  Tegra display controller support.
 
+config TEGRA_OVERLAY
+	tristate "Tegra Overlay Device Node"
+	depends on TEGRA_DC && !TEGRA_DC_EXTENSIONS
+	default y
+	help
+	  Device node for multi-client overlay support.
 config FB_TEGRA
 	tristate "Tegra Framebuffer driver"
 	depends on TEGRA_DC && FB = y
@@ -43,7 +49,6 @@ config FB_TEGRA
 config TEGRA_DC_EXTENSIONS
 	bool "Tegra Display Controller Extensions"
 	depends on TEGRA_DC
-	default y
 	help
 	  This exposes support for extended capabilities of the Tegra display
 	  controller to userspace drivers.
@@ -69,7 +74,7 @@ config NVMAP_RECLAIM_UNPINNED_VM
 config NVMAP_ALLOW_SYSMEM
 	bool "Allow physical system memory to be used by nvmap"
 	depends on TEGRA_NVMAP
-	default n
+	default y
 	help
 	  Say Y here to allow nvmap to use physical system memory (i.e.,
 	  shared with the operating system but not translated through
