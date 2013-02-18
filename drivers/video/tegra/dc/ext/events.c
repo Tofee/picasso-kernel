@@ -1,7 +1,7 @@
 /*
  * drivers/video/tegra/dc/ext/events.c
  *
- * Copyright (c) 2011-2012, NVIDIA CORPORATION, All rights reserved.
+ * Copyright (C) 2011, NVIDIA Corporation
  *
  * Author: Robert Morell <rmorell@nvidia.com>
  *

@@ -1,7 +1,7 @@
 /*
  * drivers/video/tegra/dc/ext/util.c
  *
- * Copyright (c) 2011-2012, NVIDIA CORPORATION, All rights reserved.
+ * Copyright (C) 2011, NVIDIA Corporation
  *
  * Author: Robert Morell <rmorell@nvidia.com>
  *
@@ -20,7 +20,7 @@
 #include <linux/types.h>
 
 #include <mach/dc.h>
-#include <linux/nvmap.h>
+#include <mach/nvmap.h>
 
 /* ugh */
 #include "../../nvmap/nvmap.h"

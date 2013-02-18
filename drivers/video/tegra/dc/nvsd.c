@@ -1,7 +1,7 @@
 /*
  * drivers/video/tegra/dc/nvsd.c
  *
- * Copyright (c) 2010-2012, NVIDIA CORPORATION, All rights reserved.
+ * Copyright (c) 2010-2011, NVIDIA Corporation.
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -20,7 +20,6 @@
 #include <linux/string.h>
 #include <linux/slab.h>
 #include <linux/backlight.h>
-#include <linux/platform_device.h>
 
 #include "dc_reg.h"
 #include "dc_priv.h"
@@ -158,11 +157,10 @@ static bool nvsd_phase_in_adjustments(struct tegra_dc *dc,
 		every ADJ_PHASE_STEP frames*/
 		if ((step-- & ADJ_PHASE_STEP) == ADJ_PHASE_STEP) {
 
-			if (val != cur_sd_brightness) {
+			if (val != cur_sd_brightness)
 				val > cur_sd_brightness ?
 				(cur_sd_brightness++) :
 				(cur_sd_brightness--);
-			}
 
 			if (target_k != cur_k) {
 				if (target_k > cur_k)
@@ -378,10 +376,7 @@ void nvsd_init(struct tegra_dc *dc, struct tegra_dc_sd_settings *settings)
 	val = tegra_dc_readl(dc, DC_DISP_SD_CONTROL);
 
 	if (val & SD_ENABLE_NORMAL)
-		if (settings->phase_in_adjustments)
-			i = tegra_dc_readl(dc, DC_DISP_SD_MAN_K_VALUES);
-		else
-			i = tegra_dc_readl(dc, DC_DISP_SD_HW_K_VALUES);
+		i = tegra_dc_readl(dc, DC_DISP_SD_HW_K_VALUES);
 	else
 		i = 0; /* 0 values for RGB = 1.0, i.e. non-affected */
 
@@ -809,12 +804,9 @@ static ssize_t nvsd_settings_store(struct kobject *kobj,
 				mutex_unlock(&dc->lock);
 				return -ENODEV;
 			}
-
-			tegra_dc_hold_dc_out(dc);
-			nvsd_init(dc, sd_settings);
-			tegra_dc_release_dc_out(dc);
-
 			mutex_unlock(&dc->lock);
+
+			nvsd_init(dc, sd_settings);
 
 			/* Update backlight state IFF we're disabling! */
 			if (!sd_settings->enable && sd_settings->bl_device) {

@@ -219,7 +219,7 @@ static int tegra_overlay_set_windowattr(struct tegra_overlay_info *overlay,
 	win->stride_uv = flip_win->attr.stride_uv;
 
 	if ((s32)flip_win->attr.pre_syncpt_id >= 0) {
-		nvhost_syncpt_wait_timeout(&overlay->ndev->host->syncpt,
+		nvhost_syncpt_wait_timeout(&nvhost_get_host(overlay->ndev)->syncpt,
 					   flip_win->attr.pre_syncpt_id,
 					   flip_win->attr.pre_syncpt_val,
 					   msecs_to_jiffies(500),
@@ -383,7 +383,7 @@ static void tegra_overlay_flip_worker(struct work_struct *work)
 		       flip_win->attr.pre_syncpt_id,
 		       flip_win->attr.pre_syncpt_val);
 
-		nvhost_syncpt_wait_timeout(&overlay->ndev->host->syncpt,
+		nvhost_syncpt_wait_timeout(&nvhost_get_host(overlay->ndev)->syncpt,
 					   flip_win->attr.pre_syncpt_id,
 					   flip_win->attr.pre_syncpt_val,
 					   msecs_to_jiffies(500));
