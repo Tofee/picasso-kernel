@@ -1157,28 +1157,6 @@ int __init tegra_picasso_protected_aperture_init(void)
 }
 late_initcall(tegra_picasso_protected_aperture_init);
 
-#ifdef CONFIG_ANDROID_RAM_CONSOLE
-static void __init picasso_ramconsole_reserve(unsigned long size)
-{
-	struct resource *res;
-	long ret;
-
-	res = platform_get_resource(&ram_console_device, IORESOURCE_MEM, 0);
-	if (!res) {
-		pr_err("Failed to find memory resource for ram console\n");
-		return;
-	}
-	res->start = memblock_end_of_DRAM() - size;
-	res->end = res->start + size - 1;
-	ret = memblock_remove(res->start, size);
-	if (ret) {
-		ram_console_device.resource = NULL;
-		ram_console_device.num_resources = 0;
-		pr_err("Failed to reserve memory block for ram console\n");
-	}
-}
-#endif
-
 void __init tegra_picasso_reserve(void)
 {
 	if (memblock_reserve(0x0, 4096) < 0)
@@ -1186,7 +1164,7 @@ void __init tegra_picasso_reserve(void)
 
 	tegra_reserve(SZ_256M, SZ_8M, SZ_16M);
 #ifdef CONFIG_ANDROID_RAM_CONSOLE
-	picasso_ramconsole_reserve(SZ_1M);
+	tegra_ram_console_debug_reserve(SZ_1M);
 #endif
 }
 
