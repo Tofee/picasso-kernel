@@ -1,12 +1,12 @@
 GCOV_PROFILE := y
-obj-y += dc.o
+EXTRA_CFLAGS += -Idrivers/video/tegra/host
+obj-y += dc.o bandwidth.o mode.o clock.o lut.o csc.o window.o
 obj-y += rgb.o
-obj-$(CONFIG_TEGRA_HDMI) += hdmi.o
+obj-y += hdmi.o
 obj-$(CONFIG_TEGRA_NVHDCP) += nvhdcp.o
 obj-y += edid.o
 obj-y += nvsd.o
 obj-y += dsi.o
 obj-y += dc_sysfs.o
-obj-$(CONFIG_TEGRA_OVERLAY) += overlay.o
+obj-y += dc_config.o
 obj-$(CONFIG_TEGRA_DC_EXTENSIONS) += ext/
-obj-$(ARCH_TEGRA_2x_SOC) += lcd_edid.o
