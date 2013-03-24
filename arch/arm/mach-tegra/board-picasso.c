@@ -663,7 +663,9 @@ static void simdet_init(void)
 
 static struct platform_device *picasso_devices[] __initdata = {
 	&tegra_pmu_device,
+#if defined(CONFIG_TEGRA_IOVMM_GART) || defined(CONFIG_TEGRA_IOMMU_GART)
 	&tegra_gart_device,
+#endif
 	&tegra_aes_device,
 #ifdef CONFIG_KEYBOARD_GPIO
 	&acer_keys_device,
@@ -1162,7 +1164,13 @@ void __init tegra_picasso_reserve(void)
 	if (memblock_reserve(0x0, 4096) < 0)
 		pr_warn("Cannot reserve first 4K of memory for safety\n");
 
-	tegra_reserve(SZ_256M, SZ_8M, SZ_16M);
+#if defined(CONFIG_NVMAP_CONVERT_CARVEOUT_TO_IOVMM)
+        /* support 1920X1200 with 24bpp */
+        tegra_reserve(0, SZ_8M + SZ_1M, SZ_8M + SZ_1M);
+#else
+        tegra_reserve(SZ_256M, SZ_8M, SZ_16M); 
+#endif
+
 #ifdef CONFIG_ANDROID_RAM_CONSOLE
 	tegra_ram_console_debug_reserve(SZ_1M);
 #endif
